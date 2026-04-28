@@ -92,6 +92,27 @@ The same dashboard with the Phosphor accent and scanline overlay.
 
 ![Phosphor theme with scanlines](docs/screenshots/11-phosphor.png)
 
+## Responsive
+
+The dashboard adapts across the full desktop → mobile spectrum with five tuned breakpoints:
+
+| Breakpoint | Target | Key adaptations |
+|---|---|---|
+| `≥ 1281px` | Desktop XL | Default layout, 320px side rails, 4-col modal grid |
+| `≤ 1280px` | Small laptop | Tighter chrome, narrower hero side panel (240px), padding compression |
+| `≤ 1100px` | Tablet landscape | Center stats hide, hero/pads/starlink/fleet collapse to single column, 5-col launches table |
+| `≤ 900px`  | Tablet portrait | Live indicator hides, fonts shrink, modals to 2-col meta grid, smaller patch frame |
+| `≤ 600px`  | Phone | Header → 3-cell strip (logo · title · clock), src-badge hides, tabs scroll-snap, countdown 4-col, world clock 2-col, alarm 2-col, big-stat 1-col, launches → 3-col (`#fl · mission · status`), modals full-bleed, statusbar shows 4/8 critical items, floating chrome → icons only |
+| `≤ 380px`  | Small phone | Countdown 2×2, alarm/world-clock/specs go single column |
+
+Plus `prefers-reduced-motion: reduce` neutralises pulses/sweeps/blinks.
+
+| iPhone — Mission Ops | iPhone — Launch Archive | iPhone — Pads | Tablet portrait |
+|---|---|---|---|
+| ![Mobile Ops](docs/responsive/375-iphone-ops.png) | ![Mobile Launches](docs/responsive/375-iphone-launches.png) | ![Mobile Pads](docs/responsive/375-iphone-pads.png) | ![Tablet portrait](docs/responsive/768-tablet-p.png) |
+
+Verified zero horizontal overflow at 360 / 375 / 414 / 600 / 768 / 1024 / 1280 / 1440 px across every tab.
+
 ## Getting Started
 
 > Prefer to just look around? Open the **[live preview on Vercel](https://aero-x-eight.vercel.app/)** — no install required.

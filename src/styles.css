@@ -197,14 +197,34 @@ body[data-density='comfy'] .panel {
   }
 }
 
+/* Custom elements need display:block to avoid inline-sizing surprises */
+app-root,
+app-header,
+app-statusbar,
+app-ops,
+app-launches,
+app-fleet,
+app-pads,
+app-crew,
+app-starlink,
+app-patches {
+  display: block;
+}
+
 /* === LAYOUT === */
 .app-shell {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
   background:
     radial-gradient(1400px 600px at 50% -200px, rgba(255, 179, 71, 0.05), transparent 50%),
     var(--bg-0);
+}
+.app-shell > * {
+  min-width: 0;
 }
 
 /* === HEADER === */
@@ -372,6 +392,10 @@ body[data-density='comfy'] .panel {
   padding: 0 22px;
   gap: 0;
   overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  max-width: 100%;
+  scrollbar-width: thin;
 }
 .tab {
   background: transparent;
@@ -419,6 +443,12 @@ body[data-density='comfy'] .panel {
 /* === MAIN === */
 .main {
   padding: 22px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.main > * {
+  min-width: 0;
 }
 
 /* === PANELS === */
@@ -2022,55 +2052,378 @@ body[data-density='comfy'] .panel {
   min-height: 38px;
 }
 
-@media (max-width: 1100px) {
-  .world-clock-strip {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .alarm-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero-extras {
-    grid-template-columns: 1fr;
-  }
+/* === Responsive — desktop-first cascade ===
+   Breakpoints:
+     ≤ 1280px  small-laptop adjustments (tighter chrome, narrower side rails)
+     ≤ 1100px  tablet-landscape (collapse main grids, hide center stats)
+     ≤  900px  tablet-portrait (further compress fonts/paddings, 2-col modals)
+     ≤  600px  phone (single column, hide src-badge & non-critical statusbar
+               items, compact tabs/launches/floating chrome)
+     ≤  380px  small phone (2x2 countdown, 1-col alarm/world clock/specs)
+*/
+
+@media (max-width: 1280px) {
   .hdr {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 280px 1fr 280px;
+    padding: 12px 16px;
   }
-  .hdr-center {
-    display: none;
-  }
-  .hero {
-    grid-template-columns: 1fr;
-  }
-  .hero-main {
-    grid-template-columns: 1fr;
-  }
+  .hdr-center { gap: 18px; }
+  .hdr-stat b { font-size: 16px; }
+  .main { padding: 18px; }
+  .statusbar { gap: 14px; padding: 8px 16px; }
+  .tabs { padding: 0 16px; }
+  .hero { grid-template-columns: 1fr 320px; gap: 16px; }
+  .hero-main { grid-template-columns: 1fr 240px; }
+  .hero-name { font-size: 36px; }
+  .hero-content { padding: 22px; }
+  .hero-side { padding: 22px 18px; }
+  .pads-grid,
+  .starlink-wrap { grid-template-columns: 1fr 280px; }
+  .fleet-grid { grid-template-columns: 220px 1fr; }
+  .fleet-detail { grid-template-columns: 200px 1fr; padding: 20px 22px; gap: 24px; }
+  .modal-meta-grid { gap: 14px 18px; }
+}
+
+@media (max-width: 1100px) {
+  .world-clock-strip { grid-template-columns: repeat(3, 1fr); }
+  .alarm-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-extras { grid-template-columns: 1fr; }
+  .hdr { grid-template-columns: 1fr 1fr; }
+  .hdr-center { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-main { grid-template-columns: 1fr; }
   .hero-side {
     border-left: none;
     border-top: 1px solid var(--line);
   }
   .pads-grid,
   .starlink-wrap,
-  .fleet-grid {
-    grid-template-columns: 1fr;
-  }
-  .bigstat {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .fleet-grid { grid-template-columns: 1fr; }
+  .bigstat { grid-template-columns: repeat(2, 1fr); }
   .launch-row,
-  .list-head {
-    grid-template-columns: 40px 50px 1fr 100px 80px;
-  }
+  .list-head { grid-template-columns: 40px 50px 1fr 100px 80px; }
   .launch-row .lr-orbit,
   .launch-row .lr-status,
   .list-head > div:nth-child(6),
-  .list-head > div:nth-child(7) {
-    display: none;
+  .list-head > div:nth-child(7) { display: none; }
+  .fleet-detail { grid-template-columns: 1fr; }
+  .rocket-render { display: none; }
+}
+
+@media (max-width: 900px) {
+  .hdr-title { font-size: 14px; }
+  .hdr-sub { font-size: 9px; letter-spacing: 0.18em; }
+  .hdr-clock { font-size: 11px; padding: 4px 8px; }
+  .live-indicator { display: none; }
+
+  .main { padding: 14px; }
+  .tabs { padding: 0 12px; }
+  .tab {
+    padding: 10px 12px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
   }
+
+  .hero-name { font-size: 30px; }
+  .hero-content { padding: 18px; }
+  .hero-side { padding: 18px 14px; }
+  .patch-frame { width: 180px; height: 180px; padding: 10px; }
+  .countdown { gap: 6px; max-width: 100%; }
+  .cd-num { font-size: 28px; }
+  .cd-cell { padding: 12px 4px; }
+  .hero-meta-grid { gap: 12px 16px; }
+  .hero-flight { font-size: 11px; }
+
+  .modal-bg { padding: 16px; }
+  .modal-meta-grid { grid-template-columns: repeat(2, 1fr); gap: 14px 18px; }
+  .modal-head { padding: 16px 20px; }
+  .modal-head h2 { font-size: 22px; }
+  .modal-body { padding: 16px 20px; }
+
+  .map-panel,
+  .map-svg { min-height: 380px; }
+  .constellation { min-height: 380px; }
+
+  .bigstat-cell .v { font-size: 24px; }
+
+  .signal-log { font-size: 10px; }
+  .sl-line {
+    grid-template-columns: 60px 80px 1fr;
+    gap: 8px;
+  }
+
+  .statusbar {
+    font-size: 9px;
+    gap: 12px;
+    padding: 6px 12px;
+  }
+
+  .launch-row,
+  .list-head {
+    grid-template-columns: 36px 44px 1fr 80px 70px;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .lr-name { font-size: 13px; }
+  .lr-details { font-size: 10px; }
+  .lr-patch { width: 40px; height: 40px; }
+
+  .fleet-detail { padding: 16px; }
+  .spec-grid { grid-template-columns: repeat(2, 1fr); gap: 10px 16px; }
+  .fleet-info h2 { font-size: 26px; }
+  .fleet-info .desc { font-size: 12px; }
+
+  .crew-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .crew-card { padding: 12px; }
+  .crew-name { font-size: 14px; }
+
+  .patches-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+  }
+
+  .panel-title { font-size: 10px; }
+  .panel-meta { font-size: 9px; }
+
+  .tabs::-webkit-scrollbar { height: 4px; }
+}
+
+@media (max-width: 600px) {
+  /* Header */
+  .hdr {
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .hdr-logo { width: 30px; height: 30px; }
+  .hdr-logo span { font-size: 12px; }
+  .hdr-title { font-size: 12px; letter-spacing: 0.02em; }
+  .hdr-sub { display: none; }
+  .hdr-clock { font-size: 10px; padding: 4px 6px; }
+  .hdr-right { gap: 6px; }
+  .src-badge { display: none; }
+
+  .main {
+    padding: 10px;
+    /* Reserve space for fixed bottom trigger/hint/statusbar */
+    padding-bottom: 110px;
+  }
+  .tabs {
+    padding: 0 8px;
+    scroll-snap-type: x proximity;
+  }
+  .tab {
+    padding: 9px 10px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    scroll-snap-align: start;
+  }
+  .tab .num { display: none; }
+
+  /* Hero */
+  .hero { gap: 12px; margin-bottom: 12px; }
+  .hero-name { font-size: 24px; line-height: 1.1; }
+  .hero-tag {
+    font-size: 9px;
+    padding: 3px 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.18em;
+  }
+  .hero-flight {
+    font-size: 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+  }
+  .hero-content { padding: 14px; }
+  .hero-side { padding: 14px; }
+  .patch-frame { width: 140px; height: 140px; padding: 8px; }
+
+  .countdown { gap: 4px; }
+  .cd-num { font-size: 22px; }
+  .cd-cell { padding: 8px 2px; }
+  .cd-label { font-size: 7px; letter-spacing: 0.15em; }
+
+  .hero-meta-grid { grid-template-columns: 1fr; gap: 10px; }
+  .objectives li { font-size: 11px; }
+
+  /* WOW components */
+  .world-clock-strip { grid-template-columns: repeat(2, 1fr); }
+  .alarm-grid { grid-template-columns: repeat(2, 1fr); }
+  .bigstat { grid-template-columns: 1fr; }
+
+  .signal-log { font-size: 9px; }
+  .sl-line {
+    grid-template-columns: 48px 64px 1fr;
+    gap: 6px;
+  }
+
+  /* Launch archive — compact 3-col: #fl, mission, status */
+  .launch-row,
+  .list-head {
+    grid-template-columns: 40px 1fr 70px;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .launch-row .lr-patch,
+  .launch-row .lr-rocket,
+  .launch-row .lr-date,
+  .launch-row .lr-orbit,
+  .list-head > div:nth-child(2),
+  .list-head > div:nth-child(4),
+  .list-head > div:nth-child(5),
+  .list-head > div:nth-child(6) { display: none; }
+  .lr-num { font-size: 9px; }
+  .lr-name { font-size: 12px; }
+  .lr-details {
+    font-size: 9px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-height: 2.4em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* Fleet */
   .fleet-detail {
     grid-template-columns: 1fr;
+    padding: 14px;
+    gap: 16px;
   }
-  .rocket-render {
+  .spec-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+  }
+  .fleet-info h2 { font-size: 20px; }
+  .fleet-info .subtitle { font-size: 10px; }
+  .fleet-info .desc { font-size: 11px; }
+
+  /* Crew */
+  .crew-grid { grid-template-columns: 1fr; }
+
+  /* Patches */
+  .patches-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 6px;
+  }
+
+  /* Modals */
+  .modal-bg { padding: 8px; }
+  .modal-meta-grid { grid-template-columns: 1fr; gap: 10px; }
+  .modal-head {
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .modal-head h2 { font-size: 18px; }
+  .modal-close { align-self: flex-start; }
+  .modal-body { padding: 14px 16px; }
+  .hk-row {
+    grid-template-columns: 90px 1fr;
+    padding: 7px 10px;
+  }
+  .hk-kbd {
+    min-width: 24px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  /* Filters */
+  .filterbar { flex-wrap: wrap; gap: 6px; }
+  .filterbar input {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+  .chip { padding: 7px 10px; font-size: 9px; }
+
+  /* Statusbar — keep only critical */
+  .statusbar {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+    gap: 8px;
+    font-size: 9px;
+  }
+  .statusbar > div:nth-child(2),
+  .statusbar > div:nth-child(3),
+  .statusbar > div:nth-child(4),
+  .statusbar > div:nth-child(7) { display: none; }
+
+  /* Floating chrome */
+  .tweaks-trigger {
+    right: 10px;
+    bottom: 56px;
+    padding: 6px 8px;
+    font-size: 9px;
+    gap: 0;
+  }
+  .tweaks-trigger > span:not(.tt-icon) {
     display: none;
+  }
+  .tweaks-panel {
+    right: 8px;
+    left: 8px;
+    bottom: 100px;
+    width: auto;
+    max-height: calc(100vh - 130px);
+  }
+  .hotkey-hint {
+    left: 10px;
+    bottom: 56px;
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .hotkey-hint .hk-label { display: none; }
+  .toast {
+    right: 10px;
+    left: 10px;
+    bottom: 100px;
+    padding: 8px 12px;
+    font-size: 10px;
+    justify-content: center;
+  }
+
+  /* Maps & lists */
+  .map-panel,
+  .map-svg { min-height: 280px; }
+  .constellation { min-height: 280px; }
+  .pad-list { max-height: none; padding-right: 0; }
+
+  /* Panels */
+  .panel { padding: 12px; }
+  body[data-density='comfy'] .panel { padding: 14px; }
+  body[data-density='compact'] .panel { padding: 10px; }
+
+  .hero-extras { margin-bottom: 12px; gap: 12px; }
+}
+
+@media (max-width: 380px) {
+  .hdr-title { font-size: 11px; }
+  .countdown { grid-template-columns: 1fr 1fr; }
+  .cd-num { font-size: 24px; }
+  .alarm-grid { grid-template-columns: 1fr; }
+  .world-clock-strip { grid-template-columns: 1fr 1fr; }
+  .spec-grid { grid-template-columns: 1fr; }
+  .modal-head h2 { font-size: 16px; }
+}
+
+/* Reduced motion — honour user preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .map-pad-pulse,
+  .radar-sweep,
+  .blink {
+    animation: none !important;
   }
 }
 
